@@ -1,0 +1,16 @@
+{
+  "name": "chatbot-extension",
+  "version": "1.0.0",
+  "description": "",
+  "main": "content.js",
+  "scripts": {
+    "generate-api-key": "node generateApiKey.js"
+  },
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^10.0.0",
+    "express": "^5.1.0"
+  }
+}

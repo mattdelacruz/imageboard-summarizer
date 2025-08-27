@@ -1,0 +1,37 @@
+:root {
+  --avatar-size: 150px; /* Default size (width and height) */
+  --avatar-bottom: 0px; /* Fixed bottom position */
+  --chat-spacing: 0px; /* Minimum spacing between avatar and chat-box */
+}
+
+#floating-avatar {
+  position: fixed;
+  bottom: var(--avatar-bottom);
+  right: 20px;
+  width: var(--avatar-size);
+  height: var(--avatar-size);
+  background-image: url('../icons/avatar.png');
+  background-size: cover;
+  cursor: pointer;
+  z-index: 10000;
+}
+
+#chat-box {
+  position: fixed; 
+  bottom: calc(var(--avatar-bottom) + var(--avatar-size) + var(--chat-spacing));
+  right: 20px;
+  width: 300px;
+  max-height: 400px;
+  display: flex; 
+  flex-direction: column;
+  overflow: auto;
+  z-index: 10000;
+}
+
+.chat-messages {
+  font-size: 12px !important;
+  padding: 10px;
+  overflow: wrap;
+  white-space: pre-wrap;
+  max-width: 100%;
+}
