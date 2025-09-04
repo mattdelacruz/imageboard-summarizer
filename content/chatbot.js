@@ -6,6 +6,8 @@ class Chatbot {
 			'gpt-4.0-turbo': () => new ChatGPT4Model()
 		};
 		this.models = {};
+		this.currentModelName = null;
+		this.currentModelInstance = null;
 	}
 
 	initializeUI() {
@@ -29,6 +31,17 @@ class Chatbot {
 		});
 	}
 
+	async setModel(modelName) {
+		if (!this.modelFactories.hasOwnProperty(modelName)) {
+			throw new Error(`Model ${modelName} is not supported or configured.`);
+		}
+		if (!this.models[modelName]) {
+			this.models[modelName] = this.modelFactories[modelName]();
+		}
+		this.currentModelName = modelName;
+		this.currentModelInstance = this.models[modelName];
+	}
+
 	addMessage(message) {
 		const messages = document.querySelector('#chat-messages');
 		messages.innerHTML = '';
@@ -41,34 +54,33 @@ class Chatbot {
 		}
 	}
 
-	async addToContext(message, type, model) {
-		let selectedModel = await this.loadModel(model);
-		selectedModel.addToContext(message, type);
-	}
-
-	async loadModel(model) {
-		console.log(model)
-		if (!this.models[model]) {
-			if (this.modelFactories.hasOwnProperty(model)) {
-				this.models[model] = this.modelFactories[model]();
-			} else {
-				throw new Error(`Model ${model} is not supported or configured.`);
-			}
+	async addToContext(message, type) {
+		if (!this.currentModelInstance) {
+			throw new Error('No model selected. Please select a model first.');
 		}
-		return this.models[model];
+		this.currentModelInstance.addToContext(message, type);
 	}
 
-	async getChatbotResponse(model) {
+	async getContext() {
+		if (!this.currentModelInstance) {
+			throw new Error('No model selected. Please select a model first.');
+		}
+		return this.currentModelInstance.getContext();
+	}
+
+	async getChatbotResponse() {
 		let loadingTimeout;
 		try {
 			loadingTimeout = setTimeout(() => {
 				this.addMessage('Chotto matte kudasai...');
 			}, 5000);
 
-			const selectedModel = await this.loadModel(model);
-			const response = await selectedModel.generateResponse();
+			if (!this.currentModelInstance) {
+				throw new Error('No model selected. Please select a model first.');
+			}
+			const response = await this.currentModelInstance.generateResponse();
 			clearTimeout(loadingTimeout);
-			selectedModel.clearContext();
+			this.currentModelInstance.clearContext();
 			this.addMessage(response);
 			return response;
 		} catch (error) {
@@ -79,6 +91,4 @@ class Chatbot {
 			return errorMessage;
 		}
 	}
-
-
 }

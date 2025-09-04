@@ -31,10 +31,8 @@ async function addToAIContext(postElement, type, currModel) {
     const result = processPostMessage(postMessage);
     threadContext = result.cleanedText;
     if (type == 'op') {
-      // console.log('Adding OP to context:', result.cleanedText);
       await chatbot.addToContext(result.cleanedText, true, currModel);
     } else {
-      // console.log('Adding reply to context:', result.cleanedText);
       await chatbot.addToContext(result.cleanedText, false, currModel);
     }
   }
@@ -58,26 +56,27 @@ document.addEventListener('click', async (event) => {
     return;
   }
 
+  // Set the model on the chatbot instance before using it
+  await chatbot.setModel(currModel);
+
   const threadPosts = threadElement.querySelectorAll('.post');
   if (threadPosts.length === 0) return;
 
-  //console.log(`Found ${threadPosts.length} posts in the thread.`);
   for (const postElement of threadPosts) {
     if (postElement.classList.contains('op')) {
-      addToAIContext(postElement, 'op', currModel);
+      await addToAIContext(postElement, 'op', currModel);
     } else if (postElement.classList.contains('reply')) {
-      addToAIContext(postElement, 'reply', currModel);
+      await addToAIContext(postElement, 'reply', currModel);
     }
   }
 
   let botResponse = null;
   try {
-    botResponse = await chatbot.getChatbotResponse(currModel);
+    botResponse = await chatbot.getChatbotResponse();
   } catch (error) {
     console.error('Error getting chatbot response:', error);
     chatbot.addMessage(error.message || 'An error occurred while generating the response.');
     return;
   }
   chatbot.addMessage(botResponse);
-
 });

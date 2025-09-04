@@ -51,7 +51,7 @@ class GeminiModel extends BaseAIModel {
         };
 
         try {
-            console.log('Sending Gemini API request:', JSON.stringify(body, null, 2));
+            // console.log('Sending Gemini API request:', JSON.stringify(body, null, 2));
 
             const response = await browser.runtime.sendMessage({
                 action: "makeAPICall",
@@ -60,7 +60,7 @@ class GeminiModel extends BaseAIModel {
                 body: body
             });
 
-            console.log('Received Gemini API response:', response);
+            // console.log('Received Gemini API response:', response);
 
             if (response.error) {
                 throw new Error(response.error);
@@ -79,7 +79,7 @@ class GeminiModel extends BaseAIModel {
             }
 
             const result = candidate.content.parts[0].text;
-            console.log('Gemini API success, result:', result);
+            // console.log('Gemini API success, result:', result);
             return result;
         } catch (error) {
             console.error('Gemini API error:', error);
@@ -89,5 +89,9 @@ class GeminiModel extends BaseAIModel {
 
     clearContext() {
         this.contents = [];
+    }
+
+    getContext() {
+        return this.contents;
     }
 }
